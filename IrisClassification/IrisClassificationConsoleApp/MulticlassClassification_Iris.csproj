@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="..\Data\wine-test.txt" Link="Data\wine-test.txt" />
+    <Content Include="..\Data\wine-train.txt" Link="Data\wine-train.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Common\" />
   </ItemGroup>
@@ -30,8 +35,6 @@
     <PackageReference Include="Microsoft.ML" Version="1.5.4" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\Common\Common.csproj" />
-  </ItemGroup>
+  
 
 </Project>
