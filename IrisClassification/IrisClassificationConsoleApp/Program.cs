@@ -127,51 +127,38 @@ namespace MulticlassClassification_Iris
             Console.WriteLine("=====Predicting using model====");
             //Score sample 1
             var resultprediction1 = predEngine.Predict(SampleWineData.Wine1);
+            var indexOfHighestScoreForPrediction1 = GetIndexOfHigherScore(resultprediction1);
 
-            Console.WriteLine($"Actual: 6.     Predicted label and score:  {WineQualities[labelsArray[0]]}: {resultprediction1.Score[0]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[1]]}: {resultprediction1.Score[1]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[2]]}: {resultprediction1.Score[2]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[3]]}: {resultprediction1.Score[3]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[4]]}: {resultprediction1.Score[4]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[5]]}: {resultprediction1.Score[5]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[6]]}: {resultprediction1.Score[6]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[7]]}: {resultprediction1.Score[7]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[8]]}: {resultprediction1.Score[8]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[9]]}: {resultprediction1.Score[9]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[10]]}: {resultprediction1.Score[10]:0.####}");
+            Console.WriteLine($"Actual: 6.     Predicted label and score:  {WineQualities[labelsArray[indexOfHighestScoreForPrediction1]]}: {resultprediction1.Score[indexOfHighestScoreForPrediction1]:0.####}");
             Console.WriteLine();
 
             //Score sample 2
             var resultprediction2 = predEngine.Predict(SampleWineData.Wine2);
+            var indexOfHighestScoreForPrediction2 = GetIndexOfHigherScore(resultprediction2);
 
-            Console.WriteLine($"Actual: 7.   Predicted label and score:  {WineQualities[labelsArray[0]]}: {resultprediction2.Score[0]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[1]]}: {resultprediction2.Score[1]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[2]]}: {resultprediction2.Score[2]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[3]]}: {resultprediction2.Score[3]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[4]]}: {resultprediction2.Score[4]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[5]]}: {resultprediction2.Score[5]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[6]]}: {resultprediction2.Score[6]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[7]]}: {resultprediction2.Score[7]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[8]]}: {resultprediction2.Score[8]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[9]]}: {resultprediction2.Score[9]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[10]]}: {resultprediction2.Score[10]:0.####}");
+            Console.WriteLine($"Actual: 7.   Predicted label and score:  {WineQualities[labelsArray[indexOfHighestScoreForPrediction2]]}: {resultprediction2.Score[indexOfHighestScoreForPrediction2]:0.####}");
             Console.WriteLine();
 
             //Score sample 3
             var resultprediction3 = predEngine.Predict(SampleWineData.Wine3);
+            var indexOfHighestScoreForPrediction3 = GetIndexOfHigherScore(resultprediction3);
 
-            Console.WriteLine($"Actual: 6.   Predicted label and score: {WineQualities[labelsArray[0]]}: {resultprediction3.Score[0]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[1]]}: {resultprediction3.Score[1]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[2]]}: {resultprediction3.Score[2]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[3]]}: {resultprediction3.Score[3]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[4]]}: {resultprediction3.Score[4]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[5]]}: {resultprediction3.Score[5]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[6]]}: {resultprediction3.Score[6]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[7]]}: {resultprediction3.Score[7]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[8]]}: {resultprediction3.Score[8]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[9]]}: {resultprediction3.Score[9]:0.####}");
-            Console.WriteLine($"                                                {WineQualities[labelsArray[10]]}: {resultprediction3.Score[10]:0.####}");
+            Console.WriteLine($"Actual: 6.   Predicted label and score: {WineQualities[labelsArray[indexOfHighestScoreForPrediction3]]}: {resultprediction3.Score[indexOfHighestScoreForPrediction3]:0.####}");
             Console.WriteLine();
+        }
+
+        private static int GetIndexOfHigherScore(WinePrediction resultPrediction)
+        {
+            var maxScore = resultPrediction.Score.Max();
+            int index = 0;
+
+            foreach (var score in resultPrediction.Score)
+                if (score == maxScore)
+                    return index;
+                else
+                    index++;
+
+            throw new ArgumentNullException();
         }
 
         public static string GetAbsolutePath(string relativePath)
