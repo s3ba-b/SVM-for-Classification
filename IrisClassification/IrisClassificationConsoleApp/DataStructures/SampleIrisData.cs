@@ -1,6 +1,6 @@
-﻿using MulticlassClassification_Iris.DataStructures;
+﻿using MulticlassClassification_Wine.DataStructures;
 
-namespace MulticlassClassification_Iris.DataStructures
+namespace MulticlassClassification_Wine.DataStructures
 {
     public class SampleIrisData
     {

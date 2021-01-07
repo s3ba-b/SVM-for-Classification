@@ -1,6 +1,6 @@
 using Microsoft.ML.Data;
 
-namespace MulticlassClassification_Iris.DataStructures
+namespace MulticlassClassification_Wine.DataStructures
 {
     /// <summary>
     /// "fixed acidity";"volatile acidity";"citric acid";"residual sugar";"chlorides";"free sulfur dioxide";"total sulfur dioxide";"density";"pH";"sulphates";"alcohol";"quality"

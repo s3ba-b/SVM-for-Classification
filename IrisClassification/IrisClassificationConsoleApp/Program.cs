@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML;
 using Microsoft.ML.Data;
-using MulticlassClassification_Iris.DataStructures;
+using MulticlassClassification_Wine.DataStructures;
 
-namespace MulticlassClassification_Iris
+namespace MulticlassClassification_Wine
 {
     public static partial class Program
     {

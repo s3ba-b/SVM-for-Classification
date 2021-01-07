@@ -1,5 +1,5 @@
 ﻿
-namespace MulticlassClassification_Iris.DataStructures
+namespace MulticlassClassification_Wine.DataStructures
 {
     public class IrisPrediction
     {
