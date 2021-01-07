@@ -17,11 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\Data\iris-test.txt" Link="Data\iris-test.txt" />
-    <Content Include="..\Data\iris-train.txt" Link="Data\iris-train.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="..\Data\wine-test.txt" Link="Data\wine-test.txt" />
     <Content Include="..\Data\wine-train.txt" Link="Data\wine-train.txt" />
   </ItemGroup>
