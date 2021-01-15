@@ -10,3 +10,4 @@ Execute the "dotnet run --project WineClassification/WineClassificationConsoleAp
 Click the "Run" button
 ## References
 1. Dataset source: http://archive.ics.uci.edu/ml/datasets/Wine+Quality
+2. Code base: https://github.com/dotnet/machinelearning-samples/tree/master/samples/csharp/getting-started/DeepLearning_ImageClassification_Training
