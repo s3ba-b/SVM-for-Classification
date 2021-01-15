@@ -1,4 +1,7 @@
-﻿using System;
+﻿//Authors: Katarzyna Czerwińska s17098, Sebastian Bobrowski s17603
+
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,8 +14,6 @@ namespace MulticlassClassification_Wine
 {
     public static partial class Program
     {
-        private static string AppPath => Path.GetDirectoryName(Environment.GetCommandLineArgs()[0]);
-
         private static string BaseDatasetsRelativePath = @"../../../../Data";
         private static string TrainDataRelativePath = $"{BaseDatasetsRelativePath}/wine-train.txt";
         private static string TestDataRelativePath = $"{BaseDatasetsRelativePath}/wine-test.txt";
