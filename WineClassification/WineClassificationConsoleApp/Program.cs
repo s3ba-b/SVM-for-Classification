@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.ML;
 using Microsoft.ML.Data;
+using Microsoft.ML.Transforms;
 using MulticlassClassification_Wine.DataStructures;
 
 namespace MulticlassClassification_Wine
@@ -24,6 +25,12 @@ namespace MulticlassClassification_Wine
 
         private static string ModelPath = GetAbsolutePath(ModelRelativePath);
 
+        /// <summary>
+        /// Start the program.
+        /// Create MLContext to be shared across the model creation workflow objects. 
+        /// Set a random seed for repeatable/deterministic results across multiple trainings.
+        /// </summary>
+        /// <param name="args"></param>
         private static void Main(string[] args)
         {
             var mlContext = new MLContext(seed: 0);
@@ -36,13 +43,80 @@ namespace MulticlassClassification_Wine
             Console.ReadKey();
         }
 
+        /// <summary>
+        /// Common data loading configuration,build, train, evaluate and save the trained model to a zip file.
+        /// </summary>
+        /// <param name="mlContext"></param>
         private static void BuildTrainEvaluateAndSaveModel(MLContext mlContext)
         {
             var trainingDataView = mlContext.Data.LoadFromTextFile<WineData>(TrainDataPath, separatorChar: ';', hasHeader: true);
             var testDataView = mlContext.Data.LoadFromTextFile<WineData>(TestDataPath, separatorChar: ';', hasHeader: true);
+            var dataProcessPipeline = GetDataProcessPipeline(mlContext);
+            var trainer = GetTrainer(mlContext);
+            var trainingPipeline = dataProcessPipeline.Append(trainer);
+            ITransformer trainedModel = GetTrainedModel(trainingDataView, trainingPipeline);
+            MulticlassClassificationMetrics metrics = EvaluateModel(mlContext, testDataView, trainedModel);
+            SaveModel(mlContext, trainingDataView, trainedModel);
+        }
 
+        /// <summary>
+        /// Save/persist the trained model to a .ZIP file.
+        /// </summary>
+        /// <param name="mlContext"></param>
+        /// <param name="trainingDataView"></param>
+        /// <param name="trainedModel"></param>
+        private static void SaveModel(MLContext mlContext, IDataView trainingDataView, ITransformer trainedModel)
+        {
+            mlContext.Model.Save(trainedModel, trainingDataView.Schema, ModelPath);
+            Console.WriteLine("The model is saved to {0}", ModelPath);
+        }
 
-            var dataProcessPipeline = mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "KeyColumn", inputColumnName: nameof(WineData.quality))
+        /// <summary>
+        /// Evaluate a model.
+        /// </summary>
+        /// <param name="mlContext"></param>
+        /// <param name="testDataView"></param>
+        /// <param name="trainedModel"></param>
+        /// <returns>Multiclass Classification Metrics</returns>
+        private static MulticlassClassificationMetrics EvaluateModel(MLContext mlContext, IDataView testDataView, ITransformer trainedModel)
+        {
+            Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
+            var predictions = trainedModel.Transform(testDataView);
+            var metrics = mlContext.MulticlassClassification.Evaluate(predictions, "quality", "Score");
+            return metrics;
+        }
+
+        /// <summary>
+        /// Train the model fitting to the DataSet.
+        /// </summary>
+        /// <param name="trainingDataView"></param>
+        /// <param name="trainingPipeline"></param>
+        /// <returns>Trained model</returns>
+        private static ITransformer GetTrainedModel(IDataView trainingDataView, EstimatorChain<TransformerChain<KeyToValueMappingTransformer>> trainingPipeline)
+        {
+            Console.WriteLine("=============== Training the model ===============");
+            ITransformer trainedModel = trainingPipeline.Fit(trainingDataView);
+            return trainedModel;
+        }
+
+        /// <summary>
+        /// Set the training algorithm.
+        /// </summary>
+        /// <param name="mlContext"></param>
+        /// <returns>Trainer</returns>
+        private static EstimatorChain<KeyToValueMappingTransformer> GetTrainer(MLContext mlContext)
+        {
+            return mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy(labelColumnName: "KeyColumn", featureColumnName: "Features")
+            .Append(mlContext.Transforms.Conversion.MapKeyToValue(outputColumnName: nameof(WineData.quality), inputColumnName: "KeyColumn"));
+        }
+
+        /// <summary>
+        /// Common data process configuration with pipeline data transformations.
+        /// </summary>
+        /// <param name="mlContext"></param>
+        /// <returns>Data Process Pipeline</returns>
+        private static EstimatorChain<TransformerChain<ColumnConcatenatingTransformer>> GetDataProcessPipeline(MLContext mlContext) => 
+            mlContext.Transforms.Conversion.MapValueToKey(outputColumnName: "KeyColumn", inputColumnName: nameof(WineData.quality))
                 .Append(mlContext.Transforms.Concatenate("Features", nameof(WineData.fixedAcidity),
                                                                                    nameof(WineData.volatileAcidity),
                                                                                    nameof(WineData.citricAcid),
@@ -56,23 +130,10 @@ namespace MulticlassClassification_Wine
                                                                                    nameof(WineData.alcohol))
                                                                        .AppendCacheCheckpoint(mlContext));
 
-            var trainer = mlContext.MulticlassClassification.Trainers.SdcaMaximumEntropy(labelColumnName: "KeyColumn", featureColumnName: "Features")
-            .Append(mlContext.Transforms.Conversion.MapKeyToValue(outputColumnName: nameof(WineData.quality), inputColumnName: "KeyColumn"));
-
-            var trainingPipeline = dataProcessPipeline.Append(trainer);
-
-            Console.WriteLine("=============== Training the model ===============");
-            ITransformer trainedModel = trainingPipeline.Fit(trainingDataView);
-
-            Console.WriteLine("===== Evaluating Model's accuracy with Test data =====");
-            var predictions = trainedModel.Transform(testDataView);
-            var metrics = mlContext.MulticlassClassification.Evaluate(predictions, "quality", "Score");
-
-
-            mlContext.Model.Save(trainedModel, trainingDataView.Schema, ModelPath);
-            Console.WriteLine("The model is saved to {0}", ModelPath);
-        }
-
+        /// <summary>
+        /// Test Classification Predictions with some hard-coded samples.
+        /// </summary>
+        /// <param name="mlContext"></param>
         private static void TestSomePredictions(MLContext mlContext)
         {
             ITransformer trainedModel = mlContext.Model.Load(ModelPath, out var modelInputSchema);
